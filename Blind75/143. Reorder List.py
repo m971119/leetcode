@@ -1,4 +1,4 @@
-# TODO: INCORRECT ANSWER! HINT: USE FAST AND SLOW POINTER TO REVERSE TO RIGHT HALF PART OF LIST ONLY
+# HINT: USE FAST AND SLOW POINTER TO REVERSE TO RIGHT HALF PART OF LIST ONLY
 # Definition for singly-linked list.
 class ListNode:
     def __init__(self, val=0, next=None):
@@ -15,30 +15,33 @@ class ListNode:
 
 class Solution:
     def reorderList(self, head) -> None:
-        # reverse list
-        prev, curr = None, head
-        while curr:
-            temp = curr.next
-            curr.next = prev
-            prev = curr
-            curr = temp
-        # prev 為 reversed head
-        # dummy node
-        dummy = node = ListNode()
-        isHead = True
-        while node.val != prev.val and node.val != head.val:
-            if isHead:
-                node.next = head
-                head = head.next
-            else:
-                node.next = prev
-                prev = prev.next
-            isHead = not isHead
-            node = node.next
+        # Find middle node by slow fast pointer
+        slow, fast = head, head.next
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+
+        # put the later half into second and reverse list
+        # note: slow.next = None trims the later half part off so that head only has the first half part of the original list
+        second = slow.next
+        prev = slow.next = None
+        while second:
+            tmp = second.next
+            second.next = prev
+            prev = second
+            second = tmp
+
+        # merge two lists
+        first, second = head, prev
+        while second:
+            tmp1, tmp2 = first.next, second.next
+            first.next = second
+            second.next = tmp1
+            first, second = tmp1, tmp2
         
 
 
-items = [2, 4, 6, 8]
+items = [2, 4, 6, 8, 10]
 start = node = ListNode(items[0])
 for i in range(1, len(items)):
     node.next = ListNode(items[i])    
@@ -46,3 +49,4 @@ for i in range(1, len(items)):
 
 sol = Solution()
 sol.reorderList(start)
+print(start.toList())
